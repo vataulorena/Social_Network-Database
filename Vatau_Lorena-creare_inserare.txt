@@ -1,0 +1,504 @@
+ ----------------------------------------------Proiect BD-----------------------
+
+----------------------------------------------RETEA SOCIALA---------------------
+
+CREATE TABLE FONDATOR(
+                         id_fondator NUMBER(5) CONSTRAINT PKEY_FONDATOR PRIMARY KEY,
+                         nume VARCHAR(100) CONSTRAINT nume_fondator NOT NULL,
+                         prenume VARCHAR(100) CONSTRAINT prenume_fondator NOT NULL,
+                         telefon VARCHAR(20) CONSTRAINT telefon_student NOT NULL
+                         ); 
+                         
+INSERT INTO FONDATOR
+VALUES(1, 'Popa', 'Ana', '0766658432');
+
+INSERT INTO FONDATOR
+VALUES(2, 'Popescu', 'Dan', '0765423453');
+
+INSERT INTO FONDATOR
+VALUES(3, 'Rizea', 'Andrada', '0745437687');
+
+INSERT INTO FONDATOR
+VALUES(4, 'Ionescu', 'Andrei', '0765473896');
+
+INSERT INTO FONDATOR
+VALUES(5, 'Lazar', 'Matei', '0783742854');
+
+SELECT*
+FROM FONDATOR;
+
+
+
+CREATE TABLE JUDET(
+                    id_judet NUMBER(30) CONSTRAINT PKEY_JUDET PRIMARY KEY,
+                    denumire VARCHAR(100) CONSTRAINT denumire_judet NOT NULL
+                    );
+                    
+INSERT INTO JUDET
+VALUES(10, 'Brasov');
+
+INSERT INTO JUDET
+VALUES(11, 'Cluj');
+
+INSERT INTO JUDET
+VALUES(12, 'Gorj');
+
+INSERT INTO JUDET
+VALUES(13, 'Ilfov');
+
+INSERT INTO JUDET
+VALUES(14, 'Sibiu');
+
+SELECT*
+FROM JUDET;
+
+
+CREATE TABLE LOCALITATE(
+                        id_localitate NUMBER(5) CONSTRAINT PKEY_LOCALITATE PRIMARY KEY,
+                        denumire VARCHAR(100) CONSTRAINT denumire_localitate NOT NULL,
+                        id_judet NUMBER(30),
+                        CONSTRAINT fk_localitate FOREIGN KEY(id_judet) REFERENCES JUDET(id_judet)
+                        );
+                        
+INSERT INTO LOCALITATE
+VALUES(20, 'Brasov', 10);
+
+INSERT INTO LOCALITATE
+VALUES(21, 'Cluj-Napoca', 11);
+
+INSERT INTO LOCALITATE
+VALUES(22, 'Dej', 11);
+
+INSERT INTO LOCALITATE
+VALUES(23, 'Tg-Jiu', 12);
+
+INSERT INTO LOCALITATE
+VALUES(24, 'Buftea', 13);
+
+INSERT INTO LOCALITATE
+VALUES(25, 'Sibiu', 14);
+
+SELECT*
+FROM LOCALITATE;
+
+
+
+CREATE TABLE ADRESA_INFIINTARE(
+                                id_adresa NUMBER(5) CONSTRAINT PKEY_ADRESA_INFIINTARE PRIMARY KEY,
+                                strada VARCHAR(100) CONSTRAINT adresa_strada NOT NULL,
+                                id_localitate NUMBER(5),
+                                CONSTRAINT fk_adresa_infiintare FOREIGN KEY(id_localitate) REFERENCES LOCALITATE(id_localitate)
+                                );
+                                
+INSERT INTO ADRESA_INFIINTARE
+VALUES(30, 'Calea Poienii', 20);
+
+INSERT INTO ADRESA_INFIINTARE
+VALUES(31, 'Aleea Orhideei', 21);
+
+INSERT INTO ADRESA_INFIINTARE
+VALUES(32, 'Strada Amurg', 22);
+
+INSERT INTO ADRESA_INFIINTARE
+VALUES(33, 'Strada Unirii', 23);
+
+INSERT INTO ADRESA_INFIINTARE
+VALUES(34, 'Intrarea Luminii', 24);
+
+INSERT INTO ADRESA_INFIINTARE
+VALUES(35, 'Strada Berlin', 25);
+
+SELECT*
+FROM ADRESA_INFIINTARE;
+
+
+CREATE TABLE RETEA_SOCIALA (
+                            id_retea NUMBER(5) CONSTRAINT PKEY_RETEA_SOCIALA PRIMARY KEY,
+                            id_fondator NUMBER(5),
+                            denumire VARCHAR(100) NOT NULL,
+                            id_adresa NUMBER(5)
+);
+
+ALTER TABLE RETEA_SOCIALA
+ADD CONSTRAINT fk_id_fondator FOREIGN KEY(id_fondator) REFERENCES FONDATOR(id_fondator);
+
+ALTER TABLE RETEA_SOCIALA
+ADD CONSTRAINT fk_id_adresa FOREIGN KEY(id_adresa) REFERENCES ADRESA_INFIINTARE(id_adresa);
+    
+            
+INSERT INTO RETEA_SOCIALA
+VALUES(100, 1, 'Instagram', 30);
+
+INSERT INTO RETEA_SOCIALA
+VALUES(101, 2, 'Facebook', 31);
+
+INSERT INTO RETEA_SOCIALA
+VALUES(102, 3, 'Snapchat', 32);
+
+INSERT INTO RETEA_SOCIALA
+VALUES(103, 4, 'Tiktok', 33);
+
+INSERT INTO RETEA_SOCIALA
+VALUES(104, 5, 'Whatsapp', 34);
+
+SELECT*
+FROM RETEA_SOCIALA;
+
+
+CREATE TABLE JOB(
+                id_job NUMBER(5) CONSTRAINT PKEY_id_job PRIMARY KEY,
+                salariu NUMBER(5) CONSTRAINT salariu NOT NULL
+                );
+                
+INSERT INTO JOB
+VALUES(1000, 2500);
+
+INSERT INTO JOB
+VALUES(1001, 2900);
+
+INSERT INTO JOB
+VALUES(1002, 3550);
+
+INSERT INTO JOB
+VALUES(1003, 4000);
+
+INSERT INTO JOB
+VALUES(1004, 3700);
+
+SELECT*
+FROM JOB;
+
+CREATE TABLE ANGAJATI(
+                        id_angajat NUMBER(5) CONSTRAINT PKEY_id_angajat PRIMARY KEY,
+                        nume VARCHAR(100) CONSTRAINT nume_angajat NOT NULL,
+                        prenume VARCHAR(100) CONSTRAINT prenume_angajat NOT NULL, 
+                        id_job NUMBER(5),
+                        CONSTRAINT fk_angajati FOREIGN KEY(id_job) REFERENCES JOB(id_job)
+                        );
+                   
+ALTER TABLE angajati
+ADD id_departament NUMBER(5);
+
+ALTER TABLE ANGAJATI
+ADD CONSTRAINT fk_ang FOREIGN KEY(id_departament) REFERENCES DEPARTAMENT(id_departament);
+
+SELECT*
+FROM ANGAJATI;
+
+INSERT INTO ANGAJATI
+VALUES( 50, 'Florea', 'Denisa', 1000);
+
+INSERT INTO ANGAJATI
+VALUES( 51, 'Ignea', 'Traian', 1001);
+
+INSERT INTO ANGAJATI
+VALUES( 52, 'Munteanu', 'Daria', 1002);
+
+INSERT INTO ANGAJATI
+VALUES( 53, 'Olteanu', 'Claudiu', 1003);
+
+INSERT INTO ANGAJATI
+VALUES( 54, 'Radu', 'Silvia', 1004);
+
+UPDATE ANGAJATI
+SET id_departament = 60
+WHERE id_angajat=50;
+
+UPDATE ANGAJATI
+SET id_departament = 61
+WHERE id_angajat=51;
+
+UPDATE ANGAJATI
+SET id_departament = 62
+WHERE id_angajat=52;
+
+UPDATE ANGAJATI
+SET id_departament = 63
+WHERE id_angajat=53;
+
+UPDATE ANGAJATI
+SET id_departament = 64
+WHERE id_angajat=54;
+
+CREATE TABLE DEPARTAMENT(
+                          id_departament NUMBER(5) CONSTRAINT PKEY_DEPARTAMENT PRIMARY KEY,
+                          denumire VARCHAR(100) CONSTRAINT denumire_departament NOT NULL,  
+                          id_retea NUMBER(5),
+                          id_angajat NUMBER(5)
+                          );
+                                               
+
+ALTER TABLE DEPARTAMENT
+ADD CONSTRAINT fk_id_retea FOREIGN KEY(id_retea) REFERENCES RETEA_SOCIALA(id_retea);
+
+ALTER TABLE DEPARTAMENT
+ADD CONSTRAINT fk_id_angajat FOREIGN KEY(id_angajat) REFERENCES ANGAJATI(id_angajat);
+    
+
+INSERT INTO DEPARTAMENT
+VALUES(60, 'Dezvoltare Produs', 100, 50);
+
+INSERT INTO DEPARTAMENT
+VALUES(61, 'Marketing', 101, 51); 
+
+INSERT INTO DEPARTAMENT
+VALUES(62, 'Suport Tehnic', 102, 52); 
+
+INSERT INTO DEPARTAMENT
+VALUES(63, 'Securitate', 103, 53); 
+
+INSERT INTO DEPARTAMENT
+VALUES(64, 'Comunitate si Moderare', 104, 54); 
+
+SELECT*
+FROM DEPARTAMENT;
+
+CREATE TABLE UTILIZATORI(
+                        id_utilizator NUMBER(5) CONSTRAINT PKEY_UTILIZATORI PRIMARY KEY,
+                        nume VARCHAR(100) CONSTRAINT nume_utilizator NOT NULL,
+                        prenume VARCHAR(100) CONSTRAINT prenume_utilizator NOT NULL, 
+                        data_nasterii DATE CONSTRAINT data_nasterii NOT NULL,
+                        email VARCHAR(50) UNIQUE
+                        );
+                        
+INSERT INTO UTILIZATORI
+VALUES(200, 'Boltasu', 'Bogdan', TO_DATE('12.03.1992', 'dd.mm.yyyy'), 'bboltasu@gmail.com');
+
+INSERT INTO UTILIZATORI
+VALUES(201, 'Cernat', 'Cezar', TO_DATE('10.03.1987', 'dd.mm.yyyy'), 'cezarc@gmail.com');
+
+INSERT INTO UTILIZATORI
+VALUES(202, 'Nicoara', 'Ada', TO_DATE('08.09.1999', 'dd.mm.yyyy'), 'adaaa@gmail.com');
+
+INSERT INTO UTILIZATORI
+VALUES(203, 'Muresan', 'Bianca', TO_DATE('20.10.1972', 'dd.mm.yyyy'), 'bbianca@gmail.com');
+
+INSERT INTO UTILIZATORI
+VALUES(204, 'Parfene', 'Sorin', TO_DATE('16.12.1985', 'dd.mm.yyyy'), 'sorin@gmail.com');
+
+INSERT INTO UTILIZATORI
+VALUES(205, 'Popescu', 'Valentin', TO_DATE('29.11.1997', 'dd.mm.yyyy'), 'valentin@gmail.com');
+
+INSERT INTO UTILIZATORI
+VALUES(206, 'Radu', 'Ramona', TO_DATE('22.08.1990', 'dd.mm.yyyy'), 'ramona@gmail.com');
+
+INSERT INTO UTILIZATORI
+VALUES(207, 'Silaghi', 'Andrei', TO_DATE('17.06.1993', 'dd.mm.yyyy'), 'silaghia@gmail.com');
+
+INSERT INTO UTILIZATORI
+VALUES(208, 'Stanecu', 'Oana', TO_DATE('23.11.1989', 'dd.mm.yyyy'), 'oana@gmail.com');
+
+INSERT INTO UTILIZATORI
+VALUES(209, 'Stoian', 'Loredana', TO_DATE('15.05.1999', 'dd.mm.yyyy'), 'loredana@gmail.com');
+
+INSERT INTO UTILIZATORI
+VALUES(210, 'Tuca', 'Vanesa', TO_DATE('19.08.1996', 'dd.mm.yyyy'), 'vanesa@gmail.com');
+
+SELECT*
+FROM UTILIZATORI;
+
+
+
+CREATE TABLE CONT(
+                   id_retea NUMBER(5) CONSTRAINT pk_id_retea REFERENCES RETEA_SOCIALA(id_retea),
+                   id_utilizator NUMBER(5) CONSTRAINT pk_id_utilizator REFERENCES UTILIZATORI(id_utilizator), 
+                   parola VARCHAR(50) CONSTRAINT parola NOT NULL,
+                   CONSTRAINT pk_compus_cont primary key(id_retea,id_utilizator)
+                   );
+                   
+INSERT INTO CONT
+VALUES(100, 200, 'aaabbbc');
+
+INSERT INTO CONT
+VALUES(100, 201, 'daaadsbbc');  
+
+INSERT INTO CONT
+VALUES(101, 202, 'gagebbbc');
+
+INSERT INTO CONT
+VALUES(101, 203, 'dbuwqk');
+
+INSERT INTO CONT
+VALUES(102, 204, 'sfrvv');
+
+INSERT INTO CONT
+VALUES(102, 205, 'SJBDWXNIJ');
+
+INSERT INTO CONT
+VALUES(103, 206, 'tyndujt');
+
+INSERT INTO CONT
+VALUES(103, 207, 'wuqxjww');
+
+INSERT INTO CONT
+VALUES(104, 208, 'wuqbkjX');
+
+INSERT INTO CONT
+VALUES(104, 209, 'loivblq');
+
+SELECT*
+FROM CONT;
+                   
+                   
+                   
+CREATE TABLE PROFIL(
+                    id_profil NUMBER(5) CONSTRAINT PKEY_PROFIL PRIMARY KEY,
+                    culoare_poza VARCHAR(30) CONSTRAINT culoare_poza NOT NULL,
+                    id_utilizator NUMBER(5),
+                    CONSTRAINT fk_profil FOREIGN KEY(id_utilizator) REFERENCES UTILIZATORI(id_utilizator)
+                    );
+                    
+INSERT INTO PROFIL
+VALUES(300, 'albastru', 200);
+                  
+INSERT INTO PROFIL
+VALUES(301, 'alb', 201); 
+
+INSERT INTO PROFIL
+VALUES(302, 'galben', 202);
+
+INSERT INTO PROFIL
+VALUES(303, 'roz', 203);
+
+INSERT INTO PROFIL
+VALUES(304, 'rosu', 204);  
+
+INSERT INTO PROFIL
+VALUES(305, 'mov', 205);
+
+INSERT INTO PROFIL
+VALUES(306, 'verde', 206);
+
+INSERT INTO PROFIL
+VALUES(307, 'portocaliu', 207);
+
+INSERT INTO PROFIL
+VALUES(308, 'negru', 208);
+
+INSERT INTO PROFIL
+VALUES(309, 'gri', 209);
+
+INSERT INTO PROFIL
+VALUES(310, 'maro', 210);
+
+SELECT*
+FROM PROFIL;
+
+CREATE TABLE POSTARE(
+                     id_postare NUMBER(5) CONSTRAINT PKEY_POSTARE PRIMARY KEY,
+                     data_postare DATE CONSTRAINT data_postare NOT NULL
+                     );
+                     
+INSERT INTO POSTARE
+VALUES(900, TO_DATE('29.11.2022', 'dd.mm.yyyy'));
+
+INSERT INTO POSTARE
+VALUES(901, TO_DATE('20.11.2022', 'dd.mm.yyyy'));
+
+INSERT INTO POSTARE
+VALUES(902, TO_DATE('10.09.2022', 'dd.mm.yyyy'));
+
+INSERT INTO POSTARE
+VALUES(903, TO_DATE('07.01.2023', 'dd.mm.yyyy'));
+
+INSERT INTO POSTARE
+VALUES(904, TO_DATE('20.03.2023', 'dd.mm.yyyy'));
+
+INSERT INTO POSTARE
+VALUES(905, TO_DATE('23.11.2022', 'dd.mm.yyyy'));
+
+INSERT INTO POSTARE
+VALUES(906, TO_DATE('17.05.2022', 'dd.mm.yyyy'));
+
+INSERT INTO POSTARE
+VALUES(907, TO_DATE('01.04.2023', 'dd.mm.yyyy'));
+
+INSERT INTO POSTARE
+VALUES(908, TO_DATE('10.10.2022', 'dd.mm.yyyy'));
+
+INSERT INTO POSTARE
+VALUES(909, TO_DATE('19.02.2023', 'dd.mm.yyyy'));
+
+SELECT*
+FROM POSTARE;
+
+CREATE TABLE RECENZIE(
+                      id_recenzie NUMBER(5) CONSTRAINT PKEY_RECENZIE PRIMARY KEY, 
+                      nota VARCHAR(20) CONSTRAINT nota NOT NULL
+                      );
+                      
+INSERT INTO RECENZIE
+VALUES(800, '10');
+
+INSERT INTO RECENZIE
+VALUES(801, '7');
+
+INSERT INTO RECENZIE
+VALUES(802, '9');
+
+INSERT INTO RECENZIE
+VALUES(803, '10');
+
+INSERT INTO RECENZIE
+VALUES(804, '5');
+
+INSERT INTO RECENZIE
+VALUES(805, '9');    
+
+INSERT INTO RECENZIE
+VALUES(806, '7');
+
+INSERT INTO RECENZIE
+VALUES(807, '10');
+
+INSERT INTO RECENZIE
+VALUES(808, '5');
+
+INSERT INTO RECENZIE
+VALUES(809, '6');
+
+SELECT*
+FROM RECENZIE;
+
+
+CREATE TABLE NOTIFICARE(
+                        id_recenzie NUMBER(5) CONSTRAINT pk_RECENZIE REFERENCES RECENZIE(id_recenzie),
+                        id_postare NUMBER(5) CONSTRAINT pk_POSTARE REFERENCES POSTARE(id_postare),
+                        id_profil NUMBER(5) CONSTRAINT pk_PROFIL REFERENCES PROFIL(id_profil),
+                        ora DATE CONSTRAINT ora NOT NULL,
+                        CONSTRAINT pk_compus_not primary key(id_recenzie,id_postare, id_profil)
+                    );     
+            
+INSERT INTO NOTIFICARE
+VALUES(800,900,300, TO_DATE('22.05.2023 15:30:00', 'dd.mm.yyyy HH24:MI:SS')); 
+
+INSERT INTO NOTIFICARE
+VALUES(801,901,301, TO_DATE('22.04.2023 13:20:00', 'dd.mm.yyyy HH24:MI:SS')); 
+
+INSERT INTO NOTIFICARE
+VALUES(802,902,302, TO_DATE('12.09.2022 16:38:00', 'dd.mm.yyyy HH24:MI:SS')); 
+
+INSERT INTO NOTIFICARE
+VALUES(803,903,303, TO_DATE('26.06.2022 10:30:00', 'dd.mm.yyyy HH24:MI:SS')); 
+
+INSERT INTO NOTIFICARE
+VALUES(804,904,304, TO_DATE('22.05.2023 19:30:00', 'dd.mm.yyyy HH24:MI:SS')); 
+
+INSERT INTO NOTIFICARE
+VALUES(805,905,305, TO_DATE('29.10.2022 14:00:00', 'dd.mm.yyyy HH24:MI:SS')); 
+
+INSERT INTO NOTIFICARE
+VALUES(806,906,306, TO_DATE('18.03.2023 17:45:50', 'dd.mm.yyyy HH24:MI:SS')); 
+
+INSERT INTO NOTIFICARE
+VALUES(807,907,307, TO_DATE('16.02.2023 12:20:10', 'dd.mm.yyyy HH24:MI:SS'));
+
+INSERT INTO NOTIFICARE
+VALUES(808,908,308, TO_DATE('20.09.2022 20:35:40', 'dd.mm.yyyy HH24:MI:SS')); 
+
+INSERT INTO NOTIFICARE
+VALUES(809,909,309, TO_DATE('01.01.2023 16:39:11', 'dd.mm.yyyy HH24:MI:SS')); 
+
+
+SELECT*
+FROM NOTIFICARE;

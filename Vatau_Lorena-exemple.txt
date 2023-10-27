@@ -1,0 +1,201 @@
+
+--1. afisati numele angajatilor, numele departamentului, numele retelei unde numele angajatului contine
+--sirul "te"
+
+SELECT  a.nume, d.denumire, r.denumire
+FROM angajati a, departament d, retea_sociala r
+WHERE a.id_departament = d.id_departament
+        AND d.id_retea = r.id_retea
+        AND lower(a.nume) LIKE '%te%';
+
+--2. afisati coudl postarii pentru toate înregistr?rile care au o înregistrare corespunz?toare
+--în tabela notificare din anul 2023
+
+SELECT  po.id_postare
+FROM postare po,  (SELECT id_postare
+                   FROM notificare 
+                   WHERE to_char(ora, 'yyyy') = '2023') n
+WHERE po.id_postare = n.id_postare;
+
+
+--3. Afisati numele fondatorului, denumirea re?elei sociale si numarul de utilizatori înregistrati în reteaua sociala
+--pentru fondatorii cu sediul în orasul Brasov, afisând doar acele
+--grupuri care au cel pu?in un utilizator înregistrat
+
+SELECT f.nume, r.denumire, NVL(COUNT(*), 0) AS numar_utilizatori
+FROM fondator f, retea_sociala r, adresa_infiintare a, localitate l, judet jdt
+WHERE f.id_fondator = r.id_fondator
+    AND r.id_adresa = a.id_adresa
+    AND a.id_localitate = l.id_localitate
+    AND l.id_judet = jdt.id_judet
+    AND initcap(jdt.denumire) = 'Brasov'
+GROUP BY f.nume, r.denumire
+HAVING COUNT(*) >= 1;
+
+
+
+--4. Obtine numele utilizatorilor, culoarea pozei de profil, data de înregistrare 
+--formatati, primele 5 caractere ale adresei de email convertite în majuscule si o descriere a recenziei bazata 
+--pe nota acordata. Rezultatele trebuie sortate în functie de nume.
+
+
+SELECT u.nume, p.culoare_poza, TO_CHAR(u.data_nasterii, 'DD-MM-YYYY') AS data_inregistrare_formatata,
+        UPPER(SUBSTR(u.email, 1, 5)) AS email_upper,
+        CASE 
+            WHEN to_char(r.nota) = '10' THEN 'Foarte bine'
+            WHEN to_char(r.nota)='6' THEN 'Mai incearca'
+            ELSE 'Mai incearca'
+        END AS nota_recenzie
+FROM utilizatori u, profil p, notificare n, recenzie r, cont c
+WHERE 
+  u.id_utilizator = p.id_utilizator
+  AND u.id_utilizator = c.id_utilizator
+  AND n.id_recenzie=r.id_recenzie
+  AND n.id_profil=p.id_profil;
+ORDER BY u.nume;
+
+
+--5. Sa se afiseze numarul total de retele sociale înregistrate în fiecare localitate si
+--reteaua sociala , adresa si localitate. Pentru fiecare localitate, se va afisa denumirea localitatii 
+--si numarul de retele sociale înregistrate în acea localitate
+
+WITH adrese_retea AS (
+    SELECT r.id_retea, a.id_adresa, l.denumire AS nume_localitate
+    FROM retea_sociala r, adresa_infiintare a, localitate l
+    WHERE r.id_adresa = a.id_adresa
+    AND a.id_localitate = l.id_localitate
+)
+SELECT ar.nume_localitate, COUNT(*) AS numar_retele
+FROM adrese_retea ar
+GROUP BY ar.nume_localitate;
+
+
+--------------------------------------------------------------------------
+--13.
+
+
+UPDATE utilizatori
+SET nume = (SELECT nume 
+            FROM angajati
+            WHERE id_angajat=50)
+WHERE id_utilizator = 200;
+
+SELECT*
+FROM UTILIZATORI;
+
+
+
+
+
+UPDATE RECENZIE
+SET nota = nota + 0.5
+WHERE nota < 7 and id_recenzie in (select id_recenzie
+                                    from notificare
+                                    where to_char(ora, 'yyyy') = '2022'); 
+                                    
+
+
+
+   
+ALTER TABLE JOB
+ADD salariu_min NUMBER(5);
+
+SELECT*
+FROM JOB;
+
+ALTER TABLE JOB
+DROP COLUMN salariu_min;
+
+
+--------------------------------------------------------------------------
+
+
+--15.
+--a) Obtineti numele fondatorului, denumirea retelei sociale, strada adresei 
+--si denumirea localitatii. Daca exista o potrivire înregistrata între tabele, afisati valorile corespunzatoare. 
+--Daca nu exista o potrivire înregistrata, afisati valori nule pentru 
+--câmpurile din tabelul corespunzator utilizând outer join 
+
+SELECT f.nume, r.denumire, a.strada, l.denumire
+FROM fondator f, retea_sociala r, adresa_infiintare a, localitate l
+WHERE f.id_fondator = r.id_fondator (+)
+        AND r.id_adresa = a.id_adresa (+)
+        AND a.id_localitate = l.id_localitate (+);
+
+--b) Afiseaza toate codurile retelelor pentru care fiecare adresa are o localitate valida
+--si fiecare localitate are un judet asociat.
+
+
+SELECT r.id_retea
+FROM retea_sociala r
+WHERE NOT EXISTS (
+  SELECT *
+  FROM adresa_infiintare a
+  WHERE NOT EXISTS (
+    SELECT *
+    FROM localitate l
+    WHERE NOT EXISTS (
+      SELECT *
+      FROM judet j
+      WHERE j.id_judet = l.id_judet
+      AND l.id_localitate = a.id_localitate
+      AND a.id_adresa = r.id_adresa
+    )
+  )
+);
+
+
+--c)Afiseaza departamentele si angajatii din acele departamente care 
+--au mai putin de 2 angajati în acelasi departament.
+
+
+SELECT d.denumire AS nume_departament, a.nume AS nume_angajat
+FROM angajati a, departament d
+WHERE a.id_departament = d.id_departament
+AND (
+  SELECT COUNT(*)
+  FROM angajati a2
+  WHERE a2.id_departament = a.id_departament
+) < 2
+ORDER BY d.denumire; 
+
+--------------------------------------------------------------------------
+
+--creare secventa 
+
+CREATE SEQUENCE salary_increment
+INCREMENT BY 100
+START WITH 2500
+MAXVALUE 4500
+CYCLE;
+
+
+INSERT INTO JOB
+VALUES (1005,salary_increment.nextval);
+
+INSERT INTO JOB
+VALUES (1006, salary_increment.nextval);
+
+INSERT INTO JOB
+VALUES (1007, salary_increment.nextval);
+
+INSERT INTO JOB
+VALUES (1008, salary_increment.nextval);
+
+INSERT INTO JOB
+VALUES (1009, salary_increment.nextval);
+
+select * 
+from JOB;
+
+
+
+
+
+
+
+
+
+
+
+
